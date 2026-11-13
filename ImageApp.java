@@ -15,7 +15,7 @@ public class ImageApp
     Picture origImg = new Picture(pictureFile);
     Pixel[][] origPixels = origImg.getPixels2D();
     System.out.println(origPixels[0][0].getColor());
-    origImg.explore();
+    // origImg.explore();
 
     // Image #1 Using the original image and pixels, recolor an image by changing the RGB color of each Pixel DAVID
     Picture recoloredImg = new Picture(pictureFile);
@@ -31,7 +31,7 @@ public class ImageApp
       j = 0;
       i++;
     }
-
+    
     /* to be implemented */
  
     // Image #2 Using the original image and pixels, create a photographic negative of the image DAVID
@@ -48,20 +48,46 @@ public class ImageApp
       }
 
     }
-    negImg.explore();
+    
     /* to be implemented */
 
     // Image #3 Using the original image and pixels, create a grayscale version of the image DAVID
     Picture grayscaleImg = new Picture(pictureFile);
     Pixel[][] grayscalePixels = grayscaleImg.getPixels2D();
 
+    for (int i1 = 0; i1 < grayscalePixels.length; i1++) {
+      for (int j1 = 0; j1 < grayscalePixels[i1].length;j1++){ 
+        int red = grayscalePixels[i1][j1].getRed();
+        int green = grayscalePixels[i1][j1].getGreen(); 
+        int blue = grayscalePixels[i1][j1].getBlue();
+        int average = (red + green + blue)/3;
+        grayscalePixels[i1][j1].setColor(new Color(average, average, average));
+      }
+
+    }
+
+    
+
     /* to be implemented */
 
     // Image #4 Using the original image and pixels, rotate it 180 degrees DAVID
     Picture upsidedownImage = new Picture(pictureFile);
-    Pixel[][] upsideDownPixels = upsidedownImage.getPixels2D();
+    Pixel[][] originalPixels = upsidedownImage.getPixels2D();
+    Picture tempImage = new Picture(pictureFile);
+    Pixel[][] temp = tempImage.getPixels2D();
+    
+    for (int i1 = 0; i1 < originalPixels.length; i1++) {
 
+      for (int j1 = 0; j1< originalPixels[i1].length; j1++) {
+        int red = temp[originalPixels.length-i1-1][j1].getRed();
+        int green = temp[originalPixels.length-i1-1][j1].getGreen();
+        int blue = temp[originalPixels.length-i1-1][j1].getBlue();
+        originalPixels[i1][j1].setColor(new Color(red,green,blue));
+      }
+    }
 
+    upsidedownImage.explore();
+    
 
     /* to be implemented */
 
@@ -85,6 +111,7 @@ public class ImageApp
 
     // Final Image: Add a small image to a larger one 
 
+    
     /* to be implemented */
 
 
@@ -97,6 +124,8 @@ public class ImageApp
         { 13, 14, 15, 16 } };
     int[][] test2 = new int[4][4];
 
-
+    // negImg.explore();
+    // grayscaleImg.explore();
+    // recoloredImg.explore();
   }
 }
