@@ -114,7 +114,31 @@ public class ImageApp
     
     /* to be implemented */
 
+    Picture largeImage = new Picture(pictureFile);
+    Pixel[][] lIPixels = largeImage.getPixels2D();
+    String overPictureFile = "lib2/bird.png";
+    Picture SmallImage = new Picture(overPictureFile);
+    Pixel[][] sIPixels = SmallImage.getPixels2D();
+    int targetRow = 50;
+    int targetCol = 20;
 
+    int smallImageHeight = sIPixels.length;
+    int smallImageWidth = sIPixels[0].length;
+    // Align = topLeft
+
+
+    for (int i1 = 0; i1 < smallImageHeight; i1++) {
+      for (int j1 = 0; j1< smallImageWidth; j1++) {
+        int red = sIPixels[i1][j1].getRed();
+        int green = sIPixels[i1][j1].getGreen();
+        int blue = sIPixels[i1][j1].getBlue();
+
+        lIPixels[i1+targetRow][j1+targetCol].setColor(new Color(red,green,blue));
+      }
+    }
+
+    largeImage.explore();
+    
 
 
     // for testing  2D algorithms
