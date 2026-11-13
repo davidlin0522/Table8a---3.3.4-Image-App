@@ -20,12 +20,34 @@ public class ImageApp
     // Image #1 Using the original image and pixels, recolor an image by changing the RGB color of each Pixel
     Picture recoloredImg = new Picture(pictureFile);
     Pixel[][] recoloredPixels = recoloredImg.getPixels2D();
+    int i = 0;
+    int j = 0;
+    for (Pixel[] pc: recoloredPixels) {
+      for (Pixel p: pc){
+        p.setColor(new Color(128, 0, 128));
+        recoloredPixels[i][j] = p;
+        j++;
+      }
+      j = 0;
+      i++;
+    }
+
+    recoloredImg.explore();
 
     /* to be implemented */
 
     // Image #2 Using the original image and pixels, create a photographic negative of the image
     Picture negImg = new Picture(pictureFile);
     Pixel[][] negPixels = negImg.getPixels2D();
+    
+    for (int i1 = 0; i1 < negPixels.length; i1++) {
+      for (int j1 = 0; j1 < negPixels[i1].length;j1++){ 
+        p.setColor(new Color(128, 0, 128));
+        negPixels[i][j] = p;
+
+      }
+
+    }
 
     /* to be implemented */
 
