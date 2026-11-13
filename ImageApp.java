@@ -65,7 +65,7 @@ public class ImageApp
 
     /* to be implemented */
 
-    // Image #5 Using the original image and pixels, rotate image 90 DAVID
+    // Image #5 Using the original image and pixels, rotate image 90 SHIVAM
     Picture rotateImg = new Picture(pictureFile);
     Pixel[][] rotatePixels = rotateImg.getPixels2D();
 
@@ -83,7 +83,7 @@ public class ImageApp
     /* to be implemented */
 
 
-    // Final Image: Add a small image to a larger one SHIVAM
+    // Final Image: Add a small image to a larger one 
 
     /* to be implemented */
 
