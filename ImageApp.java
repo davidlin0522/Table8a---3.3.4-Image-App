@@ -23,25 +23,21 @@ public class ImageApp
 
     // Image #1 Using the original image and pixels, recolor an image by changing the RGB color of each Pixel DAVID
 
-    Picture recoloredImg = recolorImage(128,0,128,pictureFile);
-
-    recoloredImg.explore();
- 
+    Picture recoloredImg = recolorImage(128,0,128,pictureFile); 
     // Image #2 Using the original image and pixels, create a photographic negative of the image DAVID
     
     Picture negImage = negativeImage(pictureFile);
-    negImage.explore();
+    
 
     // Image #3 Using the original image and pixels, create a grayscale version of the image DAVID
     
     Picture greyImage = greyScaleImage(pictureFile);
-    greyImage.explore();
+    
 
 
     // Image #4 Using the original image and pixels, rotate it 180 degrees DAVID
     Picture udImage = upsideDownImage(pictureFile);
-    udImage.explore();
-    
+
 
     // Image #5 Using the original image and pixels, rotate image 90 SHIVAM
     Picture rotateImg = new Picture(pictureFile);
@@ -52,6 +48,9 @@ public class ImageApp
 
 
     // Image #6 Using the original image and pixels, rotate image -90 SHIVAM
+    
+
+    
     Picture rotateImg2 = new Picture(pictureFile);
     Pixel[][] rotatePixels2 = rotateImg2.getPixels2D();
 
@@ -61,23 +60,29 @@ public class ImageApp
     // Final Image: Add a small image to a larger one 
 
     
-    /* to be implemented */
+
     // Align = topLeft
-    Picture sOL = smallOverLarge(20,20,pictureFile, "lib2/bird.png");
-    sOL.explore();
     
+    //Test removing Background
+    Picture rBG = removeWhiteBackground("lib2/bird.png");
+    // rBG.explore();
+
+    Picture sOL = smallOverLarge(20,20,pictureFile, "lib2/bird.png");
 
 
-    // for testing  2D algorithms
-    int[][] test1 = { { 1, 2, 3, 4 },
-        { 5, 6, 7, 8 },
-        { 9, 10, 11, 12 },
-        { 13, 14, 15, 16 } };
-    int[][] test2 = new int[4][4];
-
-    // negImg.explore();
-    // grayscaleImg.explore();
     // recoloredImg.explore();
+    // negImage.explore();
+    // greyImage.explore();
+    // udImage.explore();
+    sOL.explore();
+
+    // // for testing  2D algorithms
+    // int[][] test1 = { { 1, 2, 3, 4 },
+    //     { 5, 6, 7, 8 },
+    //     { 9, 10, 11, 12 },
+    //     { 13, 14, 15, 16 } };
+    // int[][] test2 = new int[4][4];
+
   }
 
   //Image 1 DAVID
@@ -176,12 +181,27 @@ public class ImageApp
 
   // // Small Over Large DAVID
   
+  public static Picture removeWhiteBackground(String pictureFile) {
+    Picture rBG = new Picture(pictureFile);
+    Pixel[][] rBGPixels = rBG.getPixels2D();
+
+    for (int i1 = 0; i1 < rBGPixels.length; i1++) {
+      for (int j1 = 0; j1< rBGPixels[i1].length; j1++) {
+        Color cC = rBGPixels[i1][j1].getColor();
+        if (cC.getRed() == 255 && cC.getGreen() == 255 && cC.getBlue() == 255){
+          rBGPixels[i1][j1].setAlpha(0);;
+        }
+
+      }}
+    
+    return rBG;
+  }
+
   public static Picture smallOverLarge(int offsetR, int offsetC,String largePictureFile, String smallPictureFile) {
     
     Picture largeImage = new Picture(largePictureFile);
     Pixel[][] lIPixels = largeImage.getPixels2D();
-    String overPictureFile = smallPictureFile;
-    Picture SmallImage = new Picture(overPictureFile);
+    Picture SmallImage = removeWhiteBackground(smallPictureFile);
     Pixel[][] sIPixels = SmallImage.getPixels2D();
     int targetRow = offsetR;
     int targetCol = offsetC;
@@ -191,11 +211,16 @@ public class ImageApp
 
     for (int i1 = 0; i1 < smallImageHeight; i1++) {
       for (int j1 = 0; j1< smallImageWidth; j1++) {
-        int red = sIPixels[i1][j1].getRed();
-        int green = sIPixels[i1][j1].getGreen();
-        int blue = sIPixels[i1][j1].getBlue();
-
-        lIPixels[i1+targetRow][j1+targetCol].setColor(new Color(red,green,blue));
+        
+        Pixel smallPixel = sIPixels[i1][j1];
+        
+        // Only copy the pixel if it is NOT white (skipping the background)
+        if (!(smallPixel.getRed() == 255 && 
+              smallPixel.getGreen() == 255 && 
+              smallPixel.getBlue() == 255)) {
+              
+          lIPixels[i1 + targetRow][j1 + targetCol].setColor(smallPixel.getColor());
+        }
       }
     }
   return largeImage;
