@@ -17,7 +17,7 @@ public class ImageApp
     System.out.println(origPixels[0][0].getColor());
     origImg.explore();
 
-    // Image #1 Using the original image and pixels, recolor an image by changing the RGB color of each Pixel
+    // Image #1 Using the original image and pixels, recolor an image by changing the RGB color of each Pixel DAVID
     Picture recoloredImg = new Picture(pictureFile);
     Pixel[][] recoloredPixels = recoloredImg.getPixels2D();
     int i = 0;
@@ -32,51 +32,58 @@ public class ImageApp
       i++;
     }
 
-    recoloredImg.explore();
-
     /* to be implemented */
-
-    // Image #2 Using the original image and pixels, create a photographic negative of the image
+ 
+    // Image #2 Using the original image and pixels, create a photographic negative of the image DAVID
     Picture negImg = new Picture(pictureFile);
     Pixel[][] negPixels = negImg.getPixels2D();
     
     for (int i1 = 0; i1 < negPixels.length; i1++) {
       for (int j1 = 0; j1 < negPixels[i1].length;j1++){ 
-        p.setColor(new Color(128, 0, 128));
-        negPixels[i][j] = p;
+        int red = 255 - negPixels[i1][j1].getRed();
+        int green = 255 - negPixels[i1][j1].getGreen();
+        int blue = 255 - negPixels[i1][j1].getBlue();
 
+        negPixels[i1][j1].setColor(new Color(red, green, blue));
       }
 
     }
-
+    negImg.explore();
     /* to be implemented */
 
-    // Image #3 Using the original image and pixels, create a grayscale version of the image
+    // Image #3 Using the original image and pixels, create a grayscale version of the image DAVID
     Picture grayscaleImg = new Picture(pictureFile);
     Pixel[][] grayscalePixels = grayscaleImg.getPixels2D();
 
     /* to be implemented */
 
-    // Image #4 Using the original image and pixels, rotate it 180 degrees
+    // Image #4 Using the original image and pixels, rotate it 180 degrees DAVID
     Picture upsidedownImage = new Picture(pictureFile);
     Pixel[][] upsideDownPixels = upsidedownImage.getPixels2D();
 
+
+
     /* to be implemented */
 
-    // Image #5 Using the original image and pixels, rotate image 90
+    // Image #5 Using the original image and pixels, rotate image 90 DAVID
     Picture rotateImg = new Picture(pictureFile);
     Pixel[][] rotatePixels = rotateImg.getPixels2D();
 
     /* to be implemented */
 
-    // Image #6 Using the original image and pixels, rotate image -90
+
+
+
+
+
+    // Image #6 Using the original image and pixels, rotate image -90 SHIVAM
     Picture rotateImg2 = new Picture(pictureFile);
     Pixel[][] rotatePixels2 = rotateImg2.getPixels2D();
 
     /* to be implemented */
 
 
-    // Final Image: Add a small image to a larger one
+    // Final Image: Add a small image to a larger one SHIVAM
 
     /* to be implemented */
 
