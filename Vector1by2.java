@@ -12,7 +12,7 @@ public class Vector1by2 {
     }
 
     public static double dot(Vector1by2 v1, Vector1by2 v2) {
-        return v1.a * v2.a + v2.b + v2.b; 
+        return v1.a * v2.a + v1.b + v2.b; 
        }
 
     public static Vector1by2 add(Vector1by2 v1, Vector1by2 v2) {

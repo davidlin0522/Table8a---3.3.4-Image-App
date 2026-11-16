@@ -91,8 +91,10 @@ public class ImageApp
     Vector1by2 v6 = new Vector1by2(0,5);
     System.out.println(Vector1by2.dot(v5,v6));
 
-    Vector1by2 multi = Matrix2by2.multiply(v5, v6);
-    System.out.println();
+    Matrix2by2 m = new Matrix2by2(1,1,1,1);
+
+    Vector1by2 multi = Matrix2by2.multiply(v5, m);
+    System.out.println(multi);
 
   }
 
