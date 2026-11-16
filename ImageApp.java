@@ -13,11 +13,9 @@ public class ImageApp
 
     // Get an image, get 2d array of pixels, show a color of a pixel, and display the image
 
-
-
     Picture origImg = new Picture(pictureFile);
     Pixel[][] origPixels = origImg.getPixels2D();
-    System.out.println(origPixels[0][0].getColor());
+    // System.out.println(origPixels[0][0].getColor());
     // origImg.explore();
 
 
@@ -59,22 +57,16 @@ public class ImageApp
 
     // Final Image: Add a small image to a larger one 
 
-    
-
-    // Align = topLeft
-    
-    //Test removing Background
-    Picture rBG = removeWhiteBackground("lib2/bird.png");
     // rBG.explore();
 
-    Picture sOL = smallOverLarge(20,20,pictureFile, "lib2/bird.png");
+    Picture sOL = smallOverLarge(20,20,pictureFile, "lib2/dog.png");
 
 
     // recoloredImg.explore();
     // negImage.explore();
     // greyImage.explore();
     // udImage.explore();
-    sOL.explore();
+    // sOL.explore();
 
     // // for testing  2D algorithms
     // int[][] test1 = { { 1, 2, 3, 4 },
@@ -83,6 +75,23 @@ public class ImageApp
     //     { 13, 14, 15, 16 } };
     // int[][] test2 = new int[4][4];
 
+    
+
+    //*Vector 1x2 Test*/
+
+    Vector2by1 v1 = new Vector2by1(1,2);
+    Vector2by1 v2 = new Vector2by1(1,2);
+    System.out.println(Vector2by1.dot(v1,v2));
+
+    Vector2by1 v3 = new Vector2by1(0,5);
+    Vector2by1 v4 = new Vector2by1(5,0);
+    System.out.println(Vector2by1.dot(v3,v4));
+
+    Vector2by1 v5 = new Vector2by1(0,-5);
+    Vector2by1 v6 = new Vector2by1(0,5);
+    System.out.println(Vector2by1.dot(v5,v6));
+
+
   }
 
   //Image 1 DAVID
@@ -90,7 +99,8 @@ public class ImageApp
   public static Picture recolorImage(int r, int g, int b,String pictureFile) {
     Picture origImg = new Picture(pictureFile);
     Pixel[][] origPixels = origImg.getPixels2D();
-    System.out.println(origPixels[0][0].getColor());
+    // System.out.println(origPixels[0][0].getColor());
+
     // origImg.explore();
 
     Picture recoloredImg = new Picture(pictureFile);
