@@ -79,18 +79,20 @@ public class ImageApp
 
     //*Vector 1x2 Test*/
 
-    Vector2by1 v1 = new Vector2by1(1,2);
-    Vector2by1 v2 = new Vector2by1(1,2);
-    System.out.println(Vector2by1.dot(v1,v2));
+    Vector1by2 v1 = new Vector1by2(1,2);
+    Vector1by2 v2 = new Vector1by2(1,2);
+    System.out.println(Vector1by2.dot(v1,v2));
 
-    Vector2by1 v3 = new Vector2by1(0,5);
-    Vector2by1 v4 = new Vector2by1(5,0);
-    System.out.println(Vector2by1.dot(v3,v4));
+    Vector1by2 v3 = new Vector1by2(0,5);
+    Vector1by2 v4 = new Vector1by2(5,0);
+    System.out.println(Vector1by2.dot(v3,v4));
 
-    Vector2by1 v5 = new Vector2by1(0,-5);
-    Vector2by1 v6 = new Vector2by1(0,5);
-    System.out.println(Vector2by1.dot(v5,v6));
+    Vector1by2 v5 = new Vector1by2(0,-5);
+    Vector1by2 v6 = new Vector1by2(0,5);
+    System.out.println(Vector1by2.dot(v5,v6));
 
+    Vector1by2 multi = Matrix2by2.multiply(v5, v6);
+    System.out.println();
 
   }
 
