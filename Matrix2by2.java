@@ -53,19 +53,19 @@ public class Matrix2by2 {
     }
 
     public void setRotationMatrix(double angle) {
-    double radians = Math.toRadians(angle);
-    double cos = Math.cos(radians);
-    double sin = Math.sin(radians);
+        double radians = Math.toRadians(angle);
+        double cos = Math.cos(radians);
+        double sin = Math.sin(radians);
 
-    this.a1 = cos;
-    this.b1 = sin;
-    this.a2 = -sin;
-    this.b2 = cos;
+        this.a1 = cos;
+        this.b1 = sin;
+        this.a2 = -sin;
+        this.b2 = cos;
 
-    this.field = new double[][] {
-        {this.a1, this.b1},
-        {this.a2, this.b2}
-    };
+        this.field = new double[][] {
+            {this.a1, this.b1},
+            {this.a2, this.b2}
+        };
     }
 
 

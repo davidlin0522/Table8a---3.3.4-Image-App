@@ -30,7 +30,7 @@ public class ImageApp
     Picture sOL = smallOverLarge(20,20,pictureFile, "lib2/dog.png");
 
     // origImg.explore();
-    // recoloredImg.explore();
+    recoloredImg.explore();
     // negImage.explore();
     // greyImage.explore();
     // udImage.explore();
@@ -51,7 +51,7 @@ public class ImageApp
 
     //Matrix rotations
 
-    Picture rotateNDeg = rotateImageNDegrees(pictureFile,0);
+    Picture rotateNDeg = rotateImageNDegrees(pictureFile,20);
     rotateNDeg.explore();
 
 
@@ -60,14 +60,10 @@ public class ImageApp
   }
 
   //Image 1 DAVID
-
+/**
+ * This Changes every pixel in an image to a certain color
+ */
   public static Picture recolorImage(int r, int g, int b,String pictureFile) {
-    Picture origImg = new Picture(pictureFile);
-    Pixel[][] origPixels = origImg.getPixels2D();
-    // System.out.println(origPixels[0][0].getColor());
-
-    // origImg.explore();
-
     Picture recoloredImg = new Picture(pictureFile);
     Pixel[][] recoloredPixels = recoloredImg.getPixels2D();
     int i = 0;
@@ -87,6 +83,9 @@ public class ImageApp
 
   //Image 2 DAVID
 
+/**
+ * Inverts all pixel color values in an image by doing 255-rgb value
+ */
   public static Picture negativeImage(String pictureFile) {
     Picture negImg = new Picture(pictureFile);
     Pixel[][] negPixels = negImg.getPixels2D();
@@ -106,6 +105,10 @@ public class ImageApp
 
   //Image 3 DAVID
 
+  /**
+ * Averages all pixel color values rgb, and sets each to the value, for each pixel
+ */
+
   public static Picture greyScaleImage(String pictureFile) {
     Picture grayscaleImg = new Picture(pictureFile);
     Pixel[][] grayscalePixels = grayscaleImg.getPixels2D();
@@ -124,6 +127,10 @@ public class ImageApp
 
   // //Image 4 DAVID
 
+
+  /**
+ * Creates a flipped image by setting each pixel row to be
+ */
   public static Picture upsideDownImage(String pictureFile) {
     Picture upsidedownImage = new Picture(pictureFile);
     Pixel[][] originalPixels = upsidedownImage.getPixels2D();
@@ -143,6 +150,10 @@ public class ImageApp
   }
   
   // //Image 5 SHIVAM
+
+  /**
+ * Rotates the image 90 degrees; mapping each column of pixels to the rows place
+ */
   public static Picture rotate90Image(String pictureFile) {
     Picture rotateImg = new Picture(pictureFile);
     Pixel[][] rotatePixels = rotateImg.getPixels2D();
@@ -163,6 +174,10 @@ public class ImageApp
   }
 
   // Image #6 SHIVAM
+
+  /**
+ * Rotates the image -90 degrees; mapping each column of pixels to the rows place
+ */
 
   public static Picture rotateNeg90Image(String pictureFile) {
     Picture rotateImg2 = new Picture(pictureFile);
@@ -185,6 +200,10 @@ public class ImageApp
 
   // // Small Over Large DAVID
   
+  /**
+ * Removes background
+ */
+
   public static Picture removeWhiteBackground(String pictureFile) {
     Picture rBG = new Picture(pictureFile);
     Pixel[][] rBGPixels = rBG.getPixels2D();
@@ -200,6 +219,12 @@ public class ImageApp
     
     return rBG;
   }
+
+  
+  /**
+   * Puts a small image over a large one, by mapping its pixels over the 
+   * large image
+ */
 
   public static Picture smallOverLarge(int offsetR, int offsetC,String largePictureFile, String smallPictureFile) {
     
@@ -231,36 +256,75 @@ public class ImageApp
   }
 
 
-  public static Picture rotateImageNDegrees(String pictureFile,double degrees) {
+    /**
+    * Rotates using matrix multilication
+ */
+
+
+  public static Picture rotateImageNDegrees(String pictureFile, double degrees) {
     Picture input = new Picture(pictureFile);
     Pixel[][] inputArray = input.getPixels2D();
+    int origHeight = inputArray.length;
+    int origWidth = inputArray[0].length;
 
-    int yAxis = inputArray.length;
-    int xAxis = inputArray[0].length;
+    // rotate all 4 corners
+    Matrix2by2 rotateMatrix = new Matrix2by2(-degrees);
+    double halfW = origWidth / 2.0;
+    double halfH = origHeight / 2.0;
 
-    Picture output = new Picture(xAxis, yAxis);
+    Vector1by2[] corners = { //Corner coordiantes; center of shape is (0,0)
+        new Vector1by2(-halfW, -halfH),
+        new Vector1by2(halfW, -halfH),
+        new Vector1by2(-halfW, halfH),
+        new Vector1by2(halfW, halfH)
+    };
+
+    double maxX = 1000000, minX = -1000000;
+    double minY = 100000, maxY = -1000000;
+
+    for (Vector1by2 corner : corners) {
+        Vector1by2 rotated = Matrix2by2.multiply(corner, rotateMatrix);
+        maxX = Math.min(maxX, rotated.getA());
+        minX = Math.max(minX, rotated.getA());
+        minY = Math.min(minY, rotated.getB());
+        maxY = Math.max(maxY, rotated.getB());
+    }
+    System.out.println(minX);
+    System.out.println(maxY);
+    int newWidth = (int) Math.ceil(minX - maxX);
+    int newHeight = (int) Math.ceil(maxY - minY);
+
+    //create picture
+    Picture output = new Picture(newHeight, newWidth);
     Pixel[][] outputArray = output.getPixels2D();
 
-    Matrix2by2 angleMatrix = new Matrix2by2(degrees);
+    //Map Pixels
+    int newCenterX = newWidth / 2;
+    int newCenterY = newHeight / 2;
 
-    for (int y = 0; y < yAxis; y++) {
-      for (int x = 0; x < xAxis; x++) {
-        //Convert coordinates to a vector
-        Vector1by2 currentVector = new Vector1by2(x,y);
-        //do matrix multiplication
-        Vector1by2 newVector = Matrix2by2.multiply(currentVector, angleMatrix);
-        //y height: 640
-        //xwidth = 480
-        int newY = (int)newVector.getA();
-        int newX = (int)newVector.getB();
-        if (newY >= 0 && newY < inputArray.length && newX >= 0 && newX < inputArray[newY].length) {
-          outputArray[y][x].setColor(inputArray[newY][newX].getColor());
-      } 
-        
-      }
+    for (int y = 0; y < newHeight; y++) {
+        for (int x = 0; x < newWidth; x++) {
+            // Shift relative to the new image's center
+            int shiftedX = x - newCenterX;
+            int shiftedY = y - newCenterY;
+
+            // Rotate backwards to find where this pixel came from
+            Vector1by2 currentVector = new Vector1by2(shiftedX, shiftedY);
+            Vector1by2 newVector = Matrix2by2.multiply(currentVector, rotateMatrix);
+
+            // Shift back using the ORIGINAL image's center
+            int origX = (int) Math.round(newVector.getA()) + (int)halfW;
+            int origY = (int) Math.round(newVector.getB()) + (int)halfH;
+
+            //  Prevent out of bounds error for original array
+            if (origY >= 0 && origY < origHeight && origX >= 0 && origX < origWidth) {
+                outputArray[y][x].setColor(inputArray[origY][origX].getColor());
+            }
+        }
     }
 
     return output;
-  }
+}
+
 
 }
