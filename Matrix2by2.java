@@ -5,7 +5,7 @@ public class Matrix2by2 {
     private double b2;
 
     private double[][] field;
-
+    //Set each individual matrix value
     public Matrix2by2(double a1, double b1, double a2, double b2) {
         this.a1 = a1;
         this.a2 = a2;
@@ -16,7 +16,11 @@ public class Matrix2by2 {
             {a2, b2}
         };
     }
-
+    //Set with angle rotation
+    public Matrix2by2(double Angle) {
+        this.setRotationMatrix(Angle);
+    }
+    //Set using 2D array
     public Matrix2by2(double[][] field) { //Alternative code
         
         this.a1 = field[0][0];
@@ -27,10 +31,6 @@ public class Matrix2by2 {
 
     }
     
-    public Matrix2by2() {
-        this.field = new double[2][2]; 
-    }
-
     public double[][] getField() {
         return this.field;
     }
@@ -38,8 +38,8 @@ public class Matrix2by2 {
     public static Vector1by2 multiply(Vector1by2 v, Matrix2by2 m) {
         double newA = v.getA() * m.a1 + v.getB() * m.a2; 
         double newB = v.getA() * m.b1 + v.getB() * m.b2;
-        System.out.println(newA);
-        System.out.println(newB);
+        // System.out.println(newA);
+        // System.out.println(newB);
         return new Vector1by2(newA, newB);
     }
 
@@ -52,20 +52,20 @@ public class Matrix2by2 {
         return new Matrix2by2(newA1, newB1, newA2, newB2);
     }
 
-        public void setRotationMatrix(double angle) {
-        double radians = Math.toRadians(angle);
-        double cos = Math.cos(radians);
-        double sin = Math.sin(radians);
+    public void setRotationMatrix(double angle) {
+    double radians = Math.toRadians(angle);
+    double cos = Math.cos(radians);
+    double sin = Math.sin(radians);
 
-        this.a1 = cos;
-        this.b1 = sin;
-        this.a2 = -sin;
-        this.b2 = cos;
+    this.a1 = cos;
+    this.b1 = sin;
+    this.a2 = -sin;
+    this.b2 = cos;
 
-        this.field = new double[][] {
-            {this.a1, this.b1},
-            {this.a2, this.b2}
-        };
+    this.field = new double[][] {
+        {this.a1, this.b1},
+        {this.a2, this.b2}
+    };
     }
 
 
