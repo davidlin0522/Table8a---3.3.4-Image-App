@@ -28,4 +28,11 @@ public class Vector1by2 {
         return this.b;
     }
 
+     public void setA(double a){
+        this.a = a;
+    }
+    
+    public void setB(double b){
+        this.b = b;
+    }
 }

@@ -9,7 +9,7 @@ public class ImageApp
   {
     // use any file from the lib folder
     String pictureFile = "lib/beach.jpg";
-
+    
     // Get an image, get 2d array of pixels, show a color of a pixel, and display the image
     //CodeCademy Assignment
     Picture origImg = new Picture(pictureFile);
@@ -31,10 +31,12 @@ public class ImageApp
 
     //Matrix rotations
     
+  
+   
 
-      Picture rotateNDeg = rotateImageNDegrees(pictureFile, 0);
+    // PictureExplorer explorer = new PictureExplorer(rotateNDeg);
 
-    PictureExplorer explorer = new PictureExplorer(rotateNDeg);
+    // UNCOMENT TO EXPLORE ALL IMAGES FROM PLTW AND MATRIX MULTI
     // rotateNDeg.explore();
     // origImg.explore();
     // recoloredImg.explore();
@@ -45,15 +47,56 @@ public class ImageApp
     // rotated90Img.explore();
     // rotatedNeg90Img.explore();
 
+    //*************** Blackbox testing ***************\\
+    // recolored image
+    // exploreRgbRange(pictureFile, -255, 300, 50);
 
+    // String[] imageLinks = {
+    // "lib/arch.jpg","lib/beach.jpg","lib/bicycle.jpg","lib/bridge.jpg","lib/city-street.jpg","lib/dock-at-lake.jpg","lib/door.jpg",
+    // "lib/field.jpg","lib/forest-path.jpg","lib/forest.jpg","lib/gorge.jpg","lib/koala.jpg","lib/leftArrow.gif","lib/moon-surface.jpg","lib/motorcycle.jpg",
+    // "lib/picnic.jpg","lib/rainbow.jpg","lib/rightArrow.gif","lib/ruins.jpg","lib/sports-car.jpg","lib/taj-mahal.jpg","lib/temple.jpg"};
 
-  }
+    // for (String s: imageLinks) {
+    //   // Image #2 Using the original image and pixels, create a photographic negative of the image DAVID
+    //   Picture I2 = negativeImage(s);
+    //   // Image #3 Using the original image and pixels, create a grayscale version of the image DAVID
+    //   Picture I3 = greyScaleImage(s);
+    //   // Image #4 Using the original image and pixels, rotate it 180 degrees DAVID
+    //   Picture I4 = upsideDownImage(s);
+    // // Image #5 Using the original image and pixels, rotate image 90 SHIVAM
+    //   Picture I5 = rotate90Image(s);
+    //   // Image #6 Using the original image and pixels, rotate image -90 SHIVAM
+    //   Picture I6 = rotateNeg90Image(s);
+
+    //   // I2.explore();
+    //   // I3.explore();
+    //   // I4.explore();
+    //   // I5.explore();
+    //   I6.explore();
+    }
+      // for (int i = 0; i< 400; i+= 25) {
+    //    Picture rotateNDeg = rotateImageNDegrees(pictureFile, i);
+    //    rotateNDeg.explore();
+    // }
+
+    //*************** Blackbox testing end ***************\\
+
+  // }
 
   //Image 1 DAVID
 /**
  * This Changes every pixel in an image to a certain color
  */
   public static Picture recolorImage(int r, int g, int b,String pictureFile) {
+    if (r != 0) {
+      r = Math.abs(255%r);
+    }
+    if (g != 0) {
+       g = Math.abs(255%g);
+    }
+    if (b != 0) {
+      b = Math.abs(255%b);
+    }
     Picture recoloredImg = new Picture(pictureFile);
     Pixel[][] recoloredPixels = recoloredImg.getPixels2D();
     int i = 0;
@@ -70,6 +113,13 @@ public class ImageApp
 
     return recoloredImg;
   }
+  // black box testing
+  public static void exploreRgbRange(String pictureFile, int minVal, int maxVal, int step) {
+    for (int v = minVal; v <= maxVal; v += step) {
+        recolorImage(v, v, v, pictureFile).explore();
+    }
+}
+// exploreRgbRange(pictureFile, -100, 102410, 5125);
 
   //Image 2 DAVID
 
