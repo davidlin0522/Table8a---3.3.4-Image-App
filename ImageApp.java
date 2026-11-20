@@ -29,6 +29,17 @@ public class ImageApp
     // Final Image: Add a small image to a larger one 
     Picture sOL = smallOverLarge(20,20,pictureFile, "lib2/dog.png");
 
+
+  Pixel[][] rotateNDeg = rotateImageNDegrees(pictureFile, 45);
+    //get an image based on the pixel array output through MATRIX MULTI
+  Picture rotatedPicture = new Picture(rotateNDeg.length, rotateNDeg[0].length);
+  Pixel[][] picPixels = rotatedPicture.getPixels2D();
+  for (int r = 0; r < rotateNDeg.length; r++) {
+    for (int c = 0; c < rotateNDeg[0].length; c++) {
+      picPixels[r][c].setColor(rotateNDeg[r][c].getColor());
+    }
+  }
+  rotatedPicture.explore();
     //Matrix rotations
     
   
@@ -313,7 +324,7 @@ public class ImageApp
  */
 
 
-  public static Picture rotateImageNDegrees(String pictureFile, double degrees) {
+  public static Pixel[][] rotateImageNDegrees(String pictureFile, double degrees) {
     degrees = Math.abs(degrees%360);
     Picture input = new Picture(pictureFile);
     Pixel[][] inputArray = input.getPixels2D();
@@ -365,18 +376,18 @@ public class ImageApp
             Vector1by2 currentVector = new Vector1by2(shiftedX, shiftedY);
             Vector1by2 newVector = Matrix2by2.multiply(currentVector, rotateMatrix);
 
-            // Shift back using the ORIGINAL image's center
+            // Shift back using the image's center
             int origX = (int) Math.round(newVector.getA()) + (int)halfW;
             int origY = (int) Math.round(newVector.getB()) + (int)halfH;
 
-            //  Prevent out of bounds error for original array
+            //Prevent out of bounds error for 
             if (origY >= 0 && origY < origHeight && origX >= 0 && origX < origWidth) {
                 outputArray[y][x].setColor(inputArray[origY][origX].getColor());
             }
         }
     }
 
-    return output;
+    return outputArray;
 }
 
 
