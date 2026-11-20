@@ -1,4 +1,3 @@
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -96,12 +95,30 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
    * New GUI Elements : Rotations
    */
   
+  /** current rotation in degrees  */
   private int baseRotation=0;
   private JLabel currentRotation;
-  /** column previous button */
+  /** rotate +90 button */
   private JButton increaseRotation;
-  /** row previous button */
+  /** rotate -90 button */
   private JButton decreaseRotation;
+  
+  /**
+   * New GUI Elements : RGB shift
+   */
+  
+  /** amount added to every R, G and B value (-255 to 255) */
+  private int rgbShift=0;
+  /** how much one click changes the shift */
+  private static final int RGB_STEP = 15;
+  private JLabel currentRgbShift;
+  private JButton increaseRgbShift;
+  private JButton decreaseRgbShift;
+  
+  /** untouched copy of the original image; all edits are rebuilt from this */
+  private BufferedImage originalImage;
+  /** the image currently shown (rotated + color shifted) */
+  private BufferedImage displayedImage;
   
   /**
    * Public constructor 
@@ -112,6 +129,14 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     // set the fields
     this.picture=picture;
     zoomFactor=1;
+    
+    // keep a private copy of the original image 
+    BufferedImage src = picture.getBufferedImage();
+    originalImage = new BufferedImage(src.getWidth(), src.getHeight(), BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g = originalImage.createGraphics();
+    g.drawImage(src, 0, 0, null);
+    g.dispose();
+    displayedImage = originalImage;
     
     // create the window and set things up
     createWindow();
@@ -196,8 +221,7 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
   {
     scrollPane = new JScrollPane();
     
-    BufferedImage bimg = picture.getBufferedImage();
-    imageDisplay = new ImageDisplay(bimg);
+    imageDisplay = new ImageDisplay(displayedImage);
     imageDisplay.addMouseMotionListener(this);
     imageDisplay.addMouseListener(this);
     imageDisplay.setToolTipText("Click a mouse button on a pixel to see the pixel information");
@@ -231,44 +255,144 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
   //------------------------------------------------------------------------------------------------  
 
   /**
-   * Set up angle changers
+   * Set up angle changers (each click rotates the image 90 degrees)
+   * Increase = +90 (counterclockwise, same as rotate90Image in ImageApp)
+   * Decrease = -90 (clockwise, same as rotateNeg90Image in ImageApp)
    */
 
   private void setUpRotations()
-{
-  Icon prevIcon = new ImageIcon(DigitalPicture.class.getResource("lib/leftArrow.gif"),
-                                "decrease rotation");
-  Icon nextIcon = new ImageIcon(DigitalPicture.class.getResource("lib/rightArrow.gif"),
-                                "increase rotation");
+  {
+    Icon prevIcon = new ImageIcon(DigitalPicture.class.getResource("lib/leftArrow.gif"),
+                                  "decrease rotation");
+    Icon nextIcon = new ImageIcon(DigitalPicture.class.getResource("lib/rightArrow.gif"),
+                                  "increase rotation");
 
-  decreaseRotation = new JButton(prevIcon);
-  increaseRotation = new JButton(nextIcon);
-  currentRotation = new JLabel("Rotation: " + baseRotation);
+    decreaseRotation = new JButton(prevIcon);
+    increaseRotation = new JButton(nextIcon);
+    currentRotation = new JLabel("Rotation: " + baseRotation);
 
-  decreaseRotation.setToolTipText("Decrease Rotation");
-  increaseRotation.setToolTipText("Increase Rotation");
+    decreaseRotation.setToolTipText("Rotate -90 degrees");
+    increaseRotation.setToolTipText("Rotate +90 degrees");
 
-  decreaseRotation.setPreferredSize(
-      new Dimension(prevIcon.getIconWidth() + 2, prevIcon.getIconHeight() + 2));
-  increaseRotation.setPreferredSize(
-      new Dimension(nextIcon.getIconWidth() + 2, nextIcon.getIconHeight() + 2));
-  
-  increaseRotation.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
-        baseRotation +=5;
-        currentRotation.setText("Rotation: "+String.valueOf(baseRotation));
-      }
-    });
-
-  decreaseRotation.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
-        baseRotation -=5;
-        currentRotation.setText("Rotation: "+String.valueOf(baseRotation));
-      }
-    });
-
+    decreaseRotation.setPreferredSize(
+        new Dimension(prevIcon.getIconWidth() + 2, prevIcon.getIconHeight() + 2));
+    increaseRotation.setPreferredSize(
+        new Dimension(nextIcon.getIconWidth() + 2, nextIcon.getIconHeight() + 2));
     
+    increaseRotation.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          baseRotation = (baseRotation + 90) % 360;
+          currentRotation.setText("Rotation: " + baseRotation);
+          updateImage();
+        }
+      });
 
+    decreaseRotation.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          baseRotation = (baseRotation - 90 + 360) % 360;
+          currentRotation.setText("Rotation: " + baseRotation);
+          updateImage();
+        }
+      });
+  }
+  
+  /**
+   * Set up the RGB shift toggler. Moving the toggler adds (or subtracts)
+   * RGB_STEP to every red, green and blue value of the image.
+   */
+  private void setUpRgbShift()
+  {
+    Icon prevIcon = new ImageIcon(DigitalPicture.class.getResource("lib/leftArrow.gif"),
+                                  "decrease RGB shift");
+    Icon nextIcon = new ImageIcon(DigitalPicture.class.getResource("lib/rightArrow.gif"),
+                                  "increase RGB shift");
+
+    decreaseRgbShift = new JButton(prevIcon);
+    increaseRgbShift = new JButton(nextIcon);
+    currentRgbShift = new JLabel("RGB Shift: " + rgbShift);
+
+    decreaseRgbShift.setToolTipText("Darken (subtract " + RGB_STEP + " from every R, G, B)");
+    increaseRgbShift.setToolTipText("Brighten (add " + RGB_STEP + " to every R, G, B)");
+
+    decreaseRgbShift.setPreferredSize(
+        new Dimension(prevIcon.getIconWidth() + 2, prevIcon.getIconHeight() + 2));
+    increaseRgbShift.setPreferredSize(
+        new Dimension(nextIcon.getIconWidth() + 2, nextIcon.getIconHeight() + 2));
+
+    increaseRgbShift.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          rgbShift = Math.min(255, rgbShift + RGB_STEP);
+          currentRgbShift.setText("RGB Shift: " + rgbShift);
+          updateImage();
+        }
+      });
+
+    decreaseRgbShift.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          rgbShift = Math.max(-255, rgbShift - RGB_STEP);
+          currentRgbShift.setText("RGB Shift: " + rgbShift);
+          updateImage();
+        }
+      });
+  }
+  
+  /**
+   * Keeps a color value inside 0-255
+   */
+  private int clamp(int value)
+  {
+    return Math.max(0, Math.min(255, value));
+  }
+  
+  /**
+   * Rebuilds the displayed image from the original by applying the RGB shift
+   * and then the rotation, then refreshes the screen.
+   */
+  private void updateImage()
+  {
+    int w = originalImage.getWidth();
+    int h = originalImage.getHeight();
+    int quarterTurns = ((baseRotation / 90) % 4 + 4) % 4;
+    boolean swap = (quarterTurns % 2 == 1);
+    
+    BufferedImage result = new BufferedImage(swap ? h : w, swap ? w : h,
+                                             BufferedImage.TYPE_INT_ARGB);
+    
+    for (int y = 0; y < h; y++) {
+  for (int x = 0; x < w; x++) {
+    Color c = new Color(originalImage.getRGB(x, y), true);  // true = keep alpha
+
+    int a = c.getAlpha();
+    int r = clamp(c.getRed()   + rgbShift);
+    int g = clamp(c.getGreen() + rgbShift);
+    int b = clamp(c.getBlue()  + rgbShift);
+
+    Color shifted = new Color(r, g, b, a);
+
+    int nx, ny;
+    if (quarterTurns == 1) {          // 90 (counterclockwise)
+      nx = y;
+      ny = w - 1 - x;
+    } else if (quarterTurns == 2) {   // 180
+      nx = w - 1 - x;
+      ny = h - 1 - y;
+    } else if (quarterTurns == 3) {   // 270 (clockwise 90)
+      nx = h - 1 - y;
+      ny = x;
+    } else {                          // 0
+      nx = x;
+      ny = y;
+    }
+    result.setRGB(nx, ny, shifted.getRGB());
+  }
+}
+    
+    displayedImage = result;
+    
+    // redraw at the current zoom level and refresh the pixel info panel
+    zoom(zoomFactor);
+    displayPixelInformation(colIndex, rowIndex);
+    pictureFrame.repaint();
   }
 //------------------------------------------------------------------------------------------------  
   
@@ -331,8 +455,8 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     colNextButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
         colIndex++;
-        if (colIndex >= picture.getWidth())
-          colIndex = picture.getWidth() - 1;
+        if (colIndex >= displayedImage.getWidth())
+          colIndex = displayedImage.getWidth() - 1;
         displayPixelInformation(colIndex,rowIndex);
       }
     });
@@ -341,8 +465,8 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     rowNextButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
         rowIndex++;
-        if (rowIndex >= picture.getHeight())
-          rowIndex = picture.getHeight() - 1;
+        if (rowIndex >= displayedImage.getHeight())
+          rowIndex = displayedImage.getHeight() - 1;
         displayPixelInformation(colIndex,rowIndex);
       }
     });
@@ -415,13 +539,13 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     JPanel colorInfoPanel = new JPanel();
     colorInfoPanel.setLayout(new FlowLayout());
     
-    // get the pixel at the x and y
-    Pixel pixel = new Pixel(picture,colIndex,rowIndex);
+    // get the color of the pixel at the x and y (from the displayed image)
+    Color pixelColor = new Color(displayedImage.getRGB(colIndex, rowIndex));
     
     // create the labels
-    rValue = new JLabel("R: " + pixel.getRed());
-    gValue = new JLabel("G: " + pixel.getGreen());
-    bValue = new JLabel("B: " + pixel.getBlue());
+    rValue = new JLabel("R: " + pixelColor.getRed());
+    gValue = new JLabel("G: " + pixelColor.getGreen());
+    bValue = new JLabel("B: " + pixelColor.getBlue());
     
     // create the sample color panel and label
     colorLabel = new JLabel("Color at location: ");
@@ -429,7 +553,6 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     colorPanel.setBorder(new LineBorder(Color.black,1));
     
     // set the color sample to the pixel color
-    colorPanel.setBackground(pixel.getColor());
     
     // set the font
     rValue.setFont(labelFont);
@@ -454,7 +577,6 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
    */
   private void createInfoPanel(){
 
-  // rotation controls
     // create the info panel and set the layout
     JPanel infoPanel = new JPanel();
     infoPanel.setLayout(new BorderLayout());
@@ -472,13 +594,21 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     // add the panels to the info panel
     infoPanel.add(BorderLayout.NORTH,locationPanel);
     infoPanel.add(BorderLayout.SOUTH,colorInfoPanel); 
+    
+    // rotation controls + RGB shift controls
     setUpRotations();
+    setUpRgbShift();
     currentRotation.setFont(largerFont);
-    JPanel rotationPanel = new JPanel(new FlowLayout());
-    rotationPanel.add(decreaseRotation);
-    rotationPanel.add(currentRotation);
-    rotationPanel.add(increaseRotation);
-    infoPanel.add(BorderLayout.CENTER, rotationPanel);
+    currentRgbShift.setFont(largerFont);
+    JPanel controlsPanel = new JPanel(new FlowLayout());
+    controlsPanel.add(decreaseRotation);
+    controlsPanel.add(currentRotation);
+    controlsPanel.add(increaseRotation);
+    controlsPanel.add(Box.createHorizontalStrut(20));
+    controlsPanel.add(decreaseRgbShift);
+    controlsPanel.add(currentRgbShift);
+    controlsPanel.add(increaseRgbShift);
+    infoPanel.add(BorderLayout.CENTER, controlsPanel);
 
     // add the info panel
     pictureFrame.getContentPane().add(BorderLayout.NORTH,infoPanel);
@@ -503,24 +633,11 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
       int rectWidth = (int) rect.getWidth();
       int rectHeight = (int) rect.getHeight();
       
-      // get the maximum possible x and y index
-      int macolIndexX = (int) (picture.getWidth() * zoomFactor) - rectWidth - 1;
-      int macolIndexY = (int) (picture.getHeight() * zoomFactor) - rectHeight - 1;
       
       // calculate how to position the current position in the middle of the viewing
       // area
       int viewX = xPos - (int) (rectWidth / 2);
       int viewY = yPos - (int) (rectHeight / 2);
-      
-      // reposition the viewX and viewY if outside allowed values
-      if (viewX < 0)
-        viewX = 0;
-      else if (viewX > macolIndexX)
-        viewX = macolIndexX;
-      if (viewY < 0)
-        viewY = 0;
-      else if (viewY > macolIndexY)
-        viewY = macolIndexY;
       
       // move the viewport upper left point
       viewport.scrollRectToVisible(new Rectangle(viewX,viewY,rectWidth,rectHeight));
@@ -538,12 +655,11 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     zoomFactor = factor;
     
     // calculate the new width and height and get an image that size
-    int width = (int) (picture.getWidth()*zoomFactor);
-    int height = (int) (picture.getHeight()*zoomFactor);
-    BufferedImage bimg = picture.getBufferedImage();
+    int width = (int) (displayedImage.getWidth()*zoomFactor);
+    int height = (int) (displayedImage.getHeight()*zoomFactor);
     
     // set the scroll image icon to the new image
-    imageDisplay.setImage(bimg.getScaledInstance(width, height, Image.SCALE_DEFAULT));
+    imageDisplay.setImage(displayedImage.getScaledInstance(width, height, Image.SCALE_DEFAULT));
     imageDisplay.setCurrentX((int) (colIndex * zoomFactor));
     imageDisplay.setCurrentY((int) (rowIndex * zoomFactor));
     imageDisplay.revalidate();
@@ -581,8 +697,8 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
   private boolean isLocationInPicture(int column, int row)
   {
     boolean result = false; // the default is false
-    if (column >= 0 && column < picture.getWidth() &&
-        row >= 0 && row < picture.getHeight())
+    if (column >= 0 && column < displayedImage.getWidth() &&
+        row >= 0 && row < displayedImage.getHeight())
       result = true;
     
     return result;
@@ -625,16 +741,16 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
       colIndex = pictureX;
       rowIndex = pictureY;
       
-      // get the pixel at the x and y
-      Pixel pixel = new Pixel(picture,colIndex,rowIndex);
+      // get the color of the pixel at the x and y in the displayed image
+      Color pixelColor = new Color(displayedImage.getRGB(colIndex, rowIndex));
       
       // set the values based on the pixel
       colValue.setText(Integer.toString(colIndex  + numberBase));
       rowValue.setText(Integer.toString(rowIndex + numberBase));
-      rValue.setText("R: " + pixel.getRed());
-      gValue.setText("G: " + pixel.getGreen());
-      bValue.setText("B: " + pixel.getBlue());
-      colorPanel.setBackground(new Color(pixel.getRed(), pixel.getGreen(), pixel.getBlue()));
+      rValue.setText("R: " + pixelColor.getRed());
+      gValue.setText("G: " + pixelColor.getGreen());
+      bValue.setText("B: " + pixelColor.getBlue());
+      colorPanel.setBackground(pixelColor);
       
     } 
     else
