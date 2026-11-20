@@ -29,31 +29,21 @@ public class ImageApp
     // Final Image: Add a small image to a larger one 
     Picture sOL = smallOverLarge(20,20,pictureFile, "lib2/dog.png");
 
+    //Matrix rotations
+    
+
+      Picture rotateNDeg = rotateImageNDegrees(pictureFile, 0);
+
+    PictureExplorer explorer = new PictureExplorer(rotateNDeg);
+    // rotateNDeg.explore();
     // origImg.explore();
-    recoloredImg.explore();
+    // recoloredImg.explore();
     // negImage.explore();
     // greyImage.explore();
     // udImage.explore();
     // sOL.explore();
     // rotated90Img.explore();
     // rotatedNeg90Img.explore();
-
-    // // for testing  2D algorithms
-    // int[][] test1 = { { 1, 2, 3, 4 },
-    //     { 5, 6, 7, 8 },
-    //     { 9, 10, 11, 12 },
-    //     { 13, 14, 15, 16 } };
-    // int[][] test2 = new int[4][4];
-
-    
-
-    //*Vector 1x2 Test*/
-
-    //Matrix rotations
-
-    Picture rotateNDeg = rotateImageNDegrees(pictureFile,20);
-    rotateNDeg.explore();
-
 
 
 
@@ -85,6 +75,7 @@ public class ImageApp
 
 /**
  * Inverts all pixel color values in an image by doing 255-rgb value
+ * @param pictureFile the picture file
  */
   public static Picture negativeImage(String pictureFile) {
     Picture negImg = new Picture(pictureFile);
@@ -107,6 +98,7 @@ public class ImageApp
 
   /**
  * Averages all pixel color values rgb, and sets each to the value, for each pixel
+ * @param pictureFile the picture file
  */
 
   public static Picture greyScaleImage(String pictureFile) {
@@ -130,6 +122,7 @@ public class ImageApp
 
   /**
  * Creates a flipped image by setting each pixel row to be
+ * @param pictureFile the picture file
  */
   public static Picture upsideDownImage(String pictureFile) {
     Picture upsidedownImage = new Picture(pictureFile);
@@ -153,6 +146,7 @@ public class ImageApp
 
   /**
  * Rotates the image 90 degrees; mapping each column of pixels to the rows place
+ * @param pictureFile the picture file
  */
   public static Picture rotate90Image(String pictureFile) {
     Picture rotateImg = new Picture(pictureFile);
@@ -177,6 +171,7 @@ public class ImageApp
 
   /**
  * Rotates the image -90 degrees; mapping each column of pixels to the rows place
+ * @param pictureFile the picture file
  */
 
   public static Picture rotateNeg90Image(String pictureFile) {
@@ -202,6 +197,7 @@ public class ImageApp
   
   /**
  * Removes background
+ * @param pictureFile the picture file
  */
 
   public static Picture removeWhiteBackground(String pictureFile) {
@@ -224,6 +220,10 @@ public class ImageApp
   /**
    * Puts a small image over a large one, by mapping its pixels over the 
    * large image
+   * @param smallPictureFile front pic file
+   * @param offsetR row you want to start generating the image at
+   * @param offsetC column you want to start generating the image at
+   * @param largePictureFile background pic file
  */
 
   public static Picture smallOverLarge(int offsetR, int offsetC,String largePictureFile, String smallPictureFile) {
@@ -258,10 +258,13 @@ public class ImageApp
 
     /**
     * Rotates using matrix multilication
+    * @param pictureFile the picture file
+    * @param degrees amount you want to rotate by
  */
 
 
   public static Picture rotateImageNDegrees(String pictureFile, double degrees) {
+    degrees = Math.abs(degrees%360);
     Picture input = new Picture(pictureFile);
     Pixel[][] inputArray = input.getPixels2D();
     int origHeight = inputArray.length;

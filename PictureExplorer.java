@@ -91,6 +91,17 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
   
   /** the number system to use, 0 means starting at 0, 1 means starting at 1 */
   private int numberBase=0;
+
+  /**
+   * New GUI Elements : Rotations
+   */
+  
+  private int baseRotation=0;
+  private JLabel currentRotation;
+  /** column previous button */
+  private JButton increaseRotation;
+  /** row previous button */
+  private JButton decreaseRotation;
   
   /**
    * Public constructor 
@@ -215,8 +226,53 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     pictureFrame.pack();
     pictureFrame.setVisible(true);
   }
-  
+
+
+  //------------------------------------------------------------------------------------------------  
+
   /**
+   * Set up angle changers
+   */
+
+  private void setUpRotations()
+{
+  Icon prevIcon = new ImageIcon(DigitalPicture.class.getResource("lib/leftArrow.gif"),
+                                "decrease rotation");
+  Icon nextIcon = new ImageIcon(DigitalPicture.class.getResource("lib/rightArrow.gif"),
+                                "increase rotation");
+
+  decreaseRotation = new JButton(prevIcon);
+  increaseRotation = new JButton(nextIcon);
+  currentRotation = new JLabel("Rotation: " + baseRotation);
+
+  decreaseRotation.setToolTipText("Decrease Rotation");
+  increaseRotation.setToolTipText("Increase Rotation");
+
+  decreaseRotation.setPreferredSize(
+      new Dimension(prevIcon.getIconWidth() + 2, prevIcon.getIconHeight() + 2));
+  increaseRotation.setPreferredSize(
+      new Dimension(nextIcon.getIconWidth() + 2, nextIcon.getIconHeight() + 2));
+  
+  increaseRotation.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent evt) {
+        baseRotation +=5;
+        currentRotation.setText("Rotation: "+String.valueOf(baseRotation));
+      }
+    });
+
+  decreaseRotation.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent evt) {
+        baseRotation -=5;
+        currentRotation.setText("Rotation: "+String.valueOf(baseRotation));
+      }
+    });
+
+    
+
+  }
+//------------------------------------------------------------------------------------------------  
+  
+/**
    * Method to set up the next and previous buttons for the
    * pixel location information
    */
@@ -396,8 +452,9 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
    * Creates the North JPanel with all the pixel location
    * and color information
    */
-  private void createInfoPanel()
-  {
+  private void createInfoPanel(){
+
+  // rotation controls
     // create the info panel and set the layout
     JPanel infoPanel = new JPanel();
     infoPanel.setLayout(new BorderLayout());
@@ -415,7 +472,14 @@ public class PictureExplorer implements MouseMotionListener, ActionListener, Mou
     // add the panels to the info panel
     infoPanel.add(BorderLayout.NORTH,locationPanel);
     infoPanel.add(BorderLayout.SOUTH,colorInfoPanel); 
-    
+    setUpRotations();
+    currentRotation.setFont(largerFont);
+    JPanel rotationPanel = new JPanel(new FlowLayout());
+    rotationPanel.add(decreaseRotation);
+    rotationPanel.add(currentRotation);
+    rotationPanel.add(increaseRotation);
+    infoPanel.add(BorderLayout.CENTER, rotationPanel);
+
     // add the info panel
     pictureFrame.getContentPane().add(BorderLayout.NORTH,infoPanel);
   } 
